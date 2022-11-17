@@ -1,0 +1,338 @@
+import re
+
+
+def getrealx(fakex):
+    realx = N - fakex
+    return realx
+
+def getrealy(fakey):
+    realy = fakey - 1
+    return realy
+
+def getfakex(realx):
+    fakex = N - realx
+    return fakex
+
+def getfakey(realy):
+    fakey = realy + 1
+    return fakey
+
+
+
+def printmaze():
+    print("     Y, V\n     ^")
+    print("     Y, V\n     ^", file=t1)
+    for i in range(N):
+        print(" " if (N-i)>9 else "  ",N-i, "|  ", end='')
+        print(" " if (N-i)>9 else "  ",N-i, "|  ", end='',file=t1)
+
+        for j in range(M):
+            print("  " if maze[i][j] >-1 and maze[i][j] < 10 else "", " " if maze[i][j]<0 or (maze[i][j]>9 and maze[i][j]<100) else "", "" if maze[i][j]>99 else "" ,  maze[i][j], "   ", end='', sep='')
+            print("  " if maze[i][j] >-1 and maze[i][j] < 10 else "", " " if maze[i][j]<0 or (maze[i][j]>9 and maze[i][j]<100) else "", "" if maze[i][j]>99 else "" ,  maze[i][j], "   ", end='', sep='',file=t1)
+
+        print()
+        print("",file=t1)
+
+        
+    print("    ",end='')
+    print("    ",end='',file=t1)
+
+    for i in range(M):
+        print("------",end='')
+        print("------",end='',file=t1)
+
+    print("---> X,U")
+    print("---> X,U",file=t1)
+
+    print("          ", end='')
+    print("          ", end='',file=t1)
+
+    for i in range (M):
+        print(i+1, "    " if i+1<9 else "   " ,end='')
+        print(i+1, "    " if i+1<9 else "   ",end='',file=t1)
+
+    print("\n")
+    print("\n",file=t1)
+
+
+def isValid(x, y):
+
+    if maze[x][y] == 0:     #if cell is free            (free)
+        return 1
+    
+    elif maze[x][y] == 1:
+        return 2            #if cell is wall             (wall)        
+    
+    elif maze[x][y]>1 or maze[x][y]==-1:     #if cell already visited    (thread)  
+        return 3
+
+
+# A recursive utility function to solve Maze problem
+
+
+def RatMaze(move_x, move_y, x, y):
+
+    global L
+    global TRIAL
+
+    # if (x, y is goal) return True
+    if x == N-1 or x == 0 or y == M-1 or y == 0:        #if you're on the terminal state, return true
+        return True
+
+    for k in range(4):                                  #if you're not on the terminal state, generate new coordinates by moving using rules                          
+        x_new = x + move_x[k]
+        y_new = y + move_y[k]
+        
+        # print("x is ", getfakey(y_new), "y is ", getfakex(x_new))
+
+        iv = isValid(x_new, y_new)
+
+        if iv==1:
+            
+            RULES.append(k)
+            XRULES.append(getfakey(y_new))
+            YRULES.append(getfakex(x_new))
+
+            TRIAL = TRIAL +1
+            print("" if TRIAL >= 1000 else "", " " if (TRIAL >=100 and TRIAL <1000) else "", "  " if (TRIAL>=10 and TRIAL<100) else "", "   " if (TRIAL >=0 and TRIAL<10) else "", TRIAL, ") ", sep='', end='')
+            print("" if TRIAL >= 1000 else "", " " if (TRIAL >=100 and TRIAL <1000) else "", "  " if (TRIAL>=10 and TRIAL<100) else "", "   " if (TRIAL >=0 and TRIAL<10) else "", TRIAL, ") ", sep='', end='',file=t1)
+            for i in range(L-2):
+                print("-", end='')
+                print("-", end='',file=t1)
+
+            print("R",k+1,sep='',end='. ')
+            print("R",k+1,sep='',end='. ',file=t1)
+
+            L=L+1
+            maze[x_new][y_new]=L
+            print("U=",getfakey(y_new), ", V=", getfakex(x_new),". Free. L:=L+1=", L, ". LAB[", getfakey(y_new) , "][", getfakex(x_new) ,"]:=",L,".", " Terminal.\n\n" if (x_new == N-1 or x_new == 0 or y_new == M-1 or y_new == 0) else"\n", sep='', end='')
+            print("U=",getfakey(y_new), ", V=", getfakex(x_new),". Free. L:=L+1=", L, ". LAB[", getfakey(y_new) , "][", getfakex(x_new) ,"]:=",L,".", " Terminal.\n\n" if (x_new == N-1 or x_new == 0 or y_new == M-1 or y_new == 0) else"\n", sep='', end='',file=t1)
+            
+            # print("this cell is free, update and do recursive call")
+            if RatMaze (move_x, move_y, x_new, y_new):
+                return True         #if the recursive call returned true, so if it arrived, to a solution, return true; after returning true all the time, you'll go out and print the solution
+
+            else:
+                RULES.pop()
+                XRULES.pop()
+                YRULES.pop()
+
+                maze[x_new][y_new] = VALUE     #if rat_maze didn't return true, there is no path through this cell, so mark it as -1        0 IN CASE BACKTRACK1
+                L=L-1
+
+        elif iv==2:
+            TRIAL = TRIAL +1
+            print("" if TRIAL >= 1000 else "", " " if (TRIAL >=100 and TRIAL <1000) else "", "  " if (TRIAL>=10 and TRIAL<100) else "", "   " if (TRIAL >=0 and TRIAL<10) else "", TRIAL, ") ", sep='', end='')
+            print("" if TRIAL >= 1000 else "", " " if (TRIAL >=100 and TRIAL <1000) else "", "  " if (TRIAL>=10 and TRIAL<100) else "", "   " if (TRIAL >=0 and TRIAL<10) else "", TRIAL, ") ", sep='', end='',file=t1)
+
+            for i in range(L-2):
+                print("-", end='')
+                print("-", end='',file=t1)
+
+            print("R",k+1,sep='',end='. ')
+            print("R",k+1,sep='',end='. ',file=t1)
+
+            print("U=",getfakey(y_new), ", V=", getfakex(x_new),". Wall.", sep='')
+            print("U=",getfakey(y_new), ", V=", getfakex(x_new),". Wall.", sep='',file=t1)
+
+            
+            # print("case wall")
+
+
+        elif iv==3:
+            TRIAL = TRIAL +1
+            print("" if TRIAL >= 1000 else "", " " if (TRIAL >=100 and TRIAL <1000) else "", "  " if (TRIAL>=10 and TRIAL<100) else "", "   " if (TRIAL >=0 and TRIAL<10) else "", TRIAL, ") ", sep='', end='')
+            print("" if TRIAL >= 1000 else "", " " if (TRIAL >=100 and TRIAL <1000) else "", "  " if (TRIAL>=10 and TRIAL<100) else "", "   " if (TRIAL >=0 and TRIAL<10) else "", TRIAL, ") ", sep='', end='',file=t1)
+
+            for i in range(L-2):
+                print("-", end='')
+                print("-", end='',file=t1)
+
+            print("R",k+1,sep='',end='. ')
+            print("R",k+1,sep='',end='. ',file=t1)
+
+            print("U=",getfakey(y_new), ", V=", getfakex(x_new),". Thread.", sep='')
+            print("U=",getfakey(y_new), ", V=", getfakex(x_new),". Thread.", sep='',file=t1)
+
+            
+            # print("case thread")
+
+        if k==3:                    #if there is no rule left and you didn't arrive to a solution
+            maze[x][y] = VALUE
+            print("    " if TRIAL >= 1000 else "", "      " if (TRIAL >=100 and TRIAL <1000) else "", "      " if (TRIAL>=10 and TRIAL<100) else "", "       " if (TRIAL >=0 and TRIAL<10) else "", sep='', end='')
+            print("    " if TRIAL >= 1000 else "", "      " if (TRIAL >=100 and TRIAL <1000) else "", "      " if (TRIAL>=10 and TRIAL<100) else "", "       " if (TRIAL >=0 and TRIAL<10) else "", sep='', end='',file=t1)
+
+            for i in range(L-2):
+                print("-", end='')
+                print("-", end='',file=t1)
+
+            print("Backtrack from X=", getfakey(y), ", Y=", getfakex(x), ", L=", L,". LAB[",getfakey(y), "][", getfakex(x), "]:=-1. L:=L-1=",L-1, sep='')
+            print("Backtrack from X=", getfakey(y), ", Y=", getfakex(x), ", L=", L,". LAB[",getfakey(y), "][", getfakex(x), "]:=-1. L:=L-1=",L-1, sep='',file=t1)
+
+
+            # print("backtrack from   ", getfakex(y), getfakey(x), L)
+            # print("backtrack, so you have to set this cell to -1, decrease L and return false")
+            # you also have to remove the last rule from RULES 
+            return False
+
+
+def solveMaze():
+
+    global last_line
+    global init_x
+    global init_y
+    print("PART 1. Data\n  1.1. Labyrinth\n")
+    print("PART 1. Data\n  1.1. Labyrinth\n",file=t1)
+
+
+    printmaze()
+
+    move_x = [0, 1, 0, -1]      #move_x and move_y for rule
+    move_y = [-1, 0, 1, 0]
+
+
+    i=0
+    fp2=open(namelabread,"r")
+    for line in fp2:
+        last_line=line
+
+    coordinates = re.findall('\d+', last_line)
+
+    print(coordinates)
+
+    init_x = int(coordinates[0])
+    init_y = int(coordinates[1])
+
+        
+    fp2.close()
+
+    if maze[getrealx(init_y)][getrealy(init_x)]==0:
+        maze[getrealx(init_y)][getrealy(init_x)]=2
+        
+    else:
+        print("Can't start from here! Next time make sure to start from a cell with 0\n")
+        exit()
+
+
+    maze[getrealx(init_y)][getrealy(init_x)]=2
+
+    XRULES.append(init_x)
+    YRULES.append(init_y)
+
+
+    print("  1.2 Initial Position X=", init_x, ", Y=", init_y , ". L=2.\n", sep='')
+    print("  1.2 Initial Position X=", init_x, ", Y=", init_y , ". L=2.\n", sep='',file=t1)
+
+
+    print("PART 2. Trace")
+    print("PART 2. Trace",file=t1)
+
+
+    if RatMaze(move_x, move_y, getrealx(init_y), getrealy(init_x)):     #if there is a solution print the maze
+        print("PART 3. Results\n\n  3.1. Path is found. \n\n  3.2. Path Graphically:\n")
+        print("PART 3. Results\n\n  3.1. Path is found. \n\n  3.2. Path Graphically:\n",file=t1)
+
+        printmaze()
+        print("\n  3.3. Rules: ", end='')
+        print("\n  3.3. Rules: ", end='',file=t1)
+
+        for i in range(len(RULES)):
+                
+            print("R",RULES[i]+1,", " if i<len(RULES)-1 else "",sep='',end='')
+            print("R",RULES[i]+1,", " if i<len(RULES)-1 else "",sep='',end='',file=t1)
+
+        print(".")
+        print(".",file=t1)
+
+        print("\n  3.4. Nodes: ", end='')
+        print("\n  3.4. Nodes: ", end='',file=t1)
+
+        for i in range(len(XRULES)):
+            if i>0 and i <(len(XRULES)):
+                print(", ", end='')
+                print(", ", end='',file=t1)
+
+            print("[X=",XRULES[i],",Y=",YRULES[i],"]",end='',sep='')
+            print("[X=",XRULES[i],",Y=",YRULES[i],"]",end='',sep='',file=t1)
+
+        print(".")
+        print(".",file=t1)
+
+    else:
+        print('PART 3. Results\n  3.1 Solution does not exist')
+        print('PART 3. Results\n  3.1 Solution does not exist',file=t1)
+
+
+
+
+
+L=2         #starting counter
+TRIAL=0     #starting trials
+RULES=[]    #keeps track of number of rules
+XRULES=[]   #keeps track of x coordinate of rules
+YRULES=[]   #keeps track of y coordinate of rules
+
+
+namelabread=input("Write name of the input file: ")
+namelabw= input("Write name of the output file: ")
+
+
+t1=open(namelabw,"w")
+fp = open(namelabread,"r")
+
+N=-1    #y dimension, starts from -1 to avoid counting last line; gives number of rows, first index, of maze
+for line in fp: #count how many lines, except last one, to determine how many rows there are 
+    N=N+1
+fp.close()
+
+fp = open(namelabread,"r")
+done=0
+
+M=-1    #x dimension, starts from -1 to avoid counting 1 of "y=1" of first line, gives number of columns, second index, of maze
+for x in fp:
+    if done==0:
+        for character in x:
+            if character=="0" or character=="1":    #count 0s and 1s to determine length of each row 
+                M=M+1
+        done=1
+
+maze=[[0 for i in range(M)] for j in range(N)]
+
+fp.close()
+fp=open(namelabread,"r")
+
+i=0
+for line in fp:
+    if i<N:
+        j=0
+        for k in line:
+            if j<M:
+                if k=="0" or k=="1":
+                    maze[N-i-1][j]=int(k)
+                    j=j+1
+        i=i+1
+
+
+
+
+VALUE = int(input("Type 0 for BACKTRACK and -1 for BACKTRACK1\n"))
+last_line=""
+init_x=0
+init_y=0
+
+print("\n\n")
+print("\n",file=t1)
+
+
+
+
+
+if VALUE != 0 and VALUE != -1:
+    print("incorrect value")
+    print("incorrect value",file=t1)
+
+    exit()
+
+solveMaze()
+t1.close()
+fp.close()

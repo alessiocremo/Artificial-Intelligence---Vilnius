@@ -1,0 +1,7 @@
+PART 1. DATA 
+
+1) BOARD: 5x5.
+2) Initial Position: X=5, Y=2. L=1
+
+PART 3. Results
+Solution does not exist. Trials =14635368

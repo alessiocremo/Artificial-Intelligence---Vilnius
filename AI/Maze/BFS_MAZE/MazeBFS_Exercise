@@ -1,0 +1,374 @@
+import re
+
+
+def getrealx(fakex):
+    realx = N - fakex
+    return realx
+
+def getrealy(fakey):
+    realy = fakey - 1
+    return realy
+
+def getfakex(realx):
+    fakex = N - realx
+    return fakex
+
+def getfakey(realy):
+    fakey = realy + 1
+    return fakey
+
+def printmaze():
+    print("     Y, V\n     ^")
+    print("     Y, V\n     ^", file=t1)
+    for i in range(N):
+        print(" " if (N-i)>9 else "  ",N-i, "|  ", end='')
+        print(" " if (N-i)>9 else "  ",N-i, "|  ", end='',file=t1)
+
+        for j in range(M):
+            print("  " if maze[i][j] >-1 and maze[i][j] < 10 else "", " " if maze[i][j]<0 or (maze[i][j]>9 and maze[i][j]<100) else "", "" if maze[i][j]>99 else "" ,  maze[i][j], "   ", end='', sep='')
+            print("  " if maze[i][j] >-1 and maze[i][j] < 10 else "", " " if maze[i][j]<0 or (maze[i][j]>9 and maze[i][j]<100) else "", "" if maze[i][j]>99 else "" ,  maze[i][j], "   ", end='', sep='',file=t1)
+
+        print()
+        print("",file=t1)
+
+        
+    print("    ",end='')
+    print("    ",end='',file=t1)
+
+    for i in range(M):
+        print("------",end='')
+        print("------",end='',file=t1)
+
+    print("---> X,U")
+    print("---> X,U",file=t1)
+
+    print("          ", end='')
+    print("          ", end='',file=t1)
+
+    for i in range (M):
+        print(i+1, "    " if i+1<9 else "   " ,end='')
+        print(i+1, "    " if i+1<9 else "   ",end='',file=t1)
+
+    print("\n")
+    print("\n",file=t1)
+
+
+
+
+def add_on_global(cx, cy):
+    global open_nodes
+    nn = [cx, cy]
+    open_nodes.append(nn)
+
+
+def rem_on_global ():
+    global open_nodes
+    open_nodes.pop(0)
+
+
+
+
+
+def findexit():
+    arr=[]
+    for i in range(M):
+        if maze[i][0]>1:
+            arr = [i, 0, maze[i][0]]
+            return arr
+        elif maze[i][N-1]>1:
+            arr=[i, N-1, maze[i][N-1]]
+            return arr
+
+    for j in range(N):
+        if maze[0][j]>1:
+            arr = [0, j, maze[0][j]]
+            return arr
+        elif maze[M-1][j]>1:
+            arr = [M-1, j, maze[M-1][j]]
+            return arr
+
+
+def globaladd(x, y, k):
+
+    global XRULES
+    global YRULES
+    global RULES
+    
+    XRULES.append(x)
+    YRULES.append(y)
+    RULES.append(k)
+
+
+def BACK (cx, cy, v):       #build the inverse path from exit to start
+
+
+    inv_move_x = [0, -1 ,0, 1]      #inverse moves
+    inv_move_y = [1, 0, -1, 0]
+    cx2=0
+    cy2=0
+
+    for k in range(4):              #check inverse rules
+        cx2 = cx + inv_move_x[k]
+        cy2 = cy + inv_move_y[k]
+
+        # print(cx2, cy2)
+
+        if cx2 < N and cx2 >= 0 and cy2 >= 0 and cy2 < M:   #check cell is in the labyrinth to avoid errors of out of range
+            if maze[cx2][cy2]==v-1 and v>2:
+                globaladd(getfakey(cy), getfakex(cx), k+1)
+                BACK(cx2, cy2, v-1)                   #recursive call
+                
+
+
+
+
+
+def wavesolver(onodes):
+
+    global closedcounter
+    global L
+    global N
+    global M
+    global move_x
+    global move_y
+    global newn
+    global maze
+
+
+    for on in onodes:
+            itr = 0
+            x=on[0]
+            y=on[1]
+
+            print ("    Close CLOSE=" , closedcounter , ", X=", getfakey(y), ", Y=", getfakex(x), ".", sep='')
+            print ("    Close CLOSE=" , closedcounter , ", X=", getfakey(y), ", Y=", getfakex(x), ".", sep='', file=t1)
+
+            closedcounter = closedcounter+1
+
+
+
+            # for alpha in range(7):
+            #     for beta in range (7):
+            #         print(maze[alpha][beta]," ", end='')
+            #     print()
+
+            for k in range(4):                                  #if you're not on the terminal state, generate new coordinates by moving using rules                          
+                x_new = x + move_x[k]
+                y_new = y + move_y[k]
+
+
+
+                if maze[x_new][y_new] == 1:
+                    print("\tR",k+1, ". X=" , getfakey(y_new) , ", Y=",  getfakex(x_new) , ". ", sep='', end='')
+                    print("\tR",k+1, ". X=" , getfakey(y_new) , ", Y=",  getfakex(x_new) , ". ", sep='', end='', file=t1)
+
+                    print("Wall.", sep='')
+                    print("Wall.", sep='', file=t1)
+
+
+
+                elif maze[x_new][y_new] >=2:
+                    print("\tR",k+1, ". X=" , getfakey(y_new) , ", Y=",  getfakex(x_new), ". ", sep='', end='')
+                    print("\tR",k+1, ". X=" , getfakey(y_new) , ", Y=",  getfakex(x_new), ". ", sep='', end='', file=t1)
+
+                    print("CLOSED or OPEN.", sep='')
+                    print("CLOSED or OPEN.", sep='', file=t1)
+
+                    
+                elif maze[x_new][y_new] == 0:
+                    print("\tR",k+1, ". X=" , getfakey(y_new) , ", Y=",  getfakex(x_new) , ". ", sep='', end='')
+                    print("\tR",k+1, ". X=" , getfakey(y_new) , ", Y=",  getfakex(x_new) , ". ", sep='', end='', file=t1)
+
+                    print("Free. NEWN=", newn, ".", sep='', end='')
+                    print("Free. NEWN=", newn, ".", sep='', end='', file=t1)
+
+                    maze[x_new][y_new]=L
+                    add_on_global (x_new, y_new)
+                    newn=newn+1
+                    if x_new == N-1 or x_new == 0 or y_new == M-1 or y_new== 0:
+                        print(" Terminal. \n")
+                        print(" Terminal. \n",file=t1)
+
+                        return True
+                    else:
+                        print()
+                        print("",file=t1)
+            print()
+            print("",file=t1)
+
+
+                
+
+
+            rem_on_global()
+            
+
+
+
+def BFS_Maze(X,Y):
+
+    global open_nodes
+    global closedcounter
+    global newn
+    global last_line
+    global move_x
+    global move_y
+    global L
+
+    open2=[]
+
+    while len(open_nodes) != 0:
+
+        open2.clear()
+
+        L=L+1
+        for i in range(0,len(open_nodes)):
+            open2.append(open_nodes[i])
+
+        print("WAVE " , L-2 , " label L=" + "\"" ,L, "\"", sep='')
+        print("WAVE " , L-2 , " label L=" + "\"" ,L, "\"", sep='', file=t1)
+
+        if(wavesolver(open2)):
+            return True
+        
+
+        
+
+def solveMaze():
+
+    global last_line
+    global init_x
+    global init_y
+    print("PART 1. Data\n  1.1. Labyrinth\n")
+    print("PART 1. Data\n  1.1. Labyrinth\n",file=t1)
+
+    printmaze()
+    array=[]
+
+    i=0
+    fp2=open(namelabread,"r")
+    for line in fp2:
+        last_line=line
+
+    coordinates = re.findall('\d+', last_line)
+
+
+    init_x = int(coordinates[0])
+    init_y = int(coordinates[1])
+    
+    fp2.close()
+
+    if maze[getrealx(init_y)][getrealy(init_x)]==0:
+        maze[getrealx(init_y)][getrealy(init_x)]=2
+        
+    else:
+        print("Can't start from here! Next time make sure to start from a cell with 0\n")
+        exit()
+
+    maze[getrealx(init_y)][getrealy(init_x)]=2
+
+    first_node = [init_x,init_y]
+
+    print("  1.2 Initial Position X=",init_x, ", Y=",init_y , ". L=2.\n", sep='')
+    print("  1.2 Initial Position X=",init_x, ", Y=",init_y , ". L=2.\n", sep='',file=t1)
+
+
+    print("PART 2. Trace\n")
+    print("PART 2. Trace\n",file=t1)
+
+    print("WAVE 0, label L=" + "\"2\". Initial Position X=" , init_x, ", Y=" , init_y, ", NEWN=1\n", sep='')
+    print("WAVE 0, label L=" + "\"2\". Initial Position X=" , init_x, ", Y=" , init_y, ", NEWN=1\n", sep='', file=t1)
+
+
+
+
+    add_on_global(getrealx(init_y), getrealy(init_x))       #adding first node to open nodes
+
+
+    if(BFS_Maze(getrealx(init_y),getrealy(init_x))):
+        array=findexit()
+        BACK(array[0],array[1],array[2])
+        print("Part 3. Results\n\n  3.1. Path is found.\n\n  3.2. Path graphically:\n\nLABCOPY")
+        print("Part 3. Results\n\n  3.1. Path is found.\n\n  3.2. Path graphically:\n\nLABCOPY", file=t1)
+
+        printmaze()
+        print("  3.3. Rules: ",end='')
+        print("  3.3. Rules: ",end='', file=t1)
+
+        for i in range(0,len(RULES)):       #printing RULES reversed
+            print("R",RULES[len(RULES)-i-1], ", " if i<len(RULES)-1 else ".",end='',sep='')
+            print("R",RULES[len(RULES)-i-1], ", " if i<len(RULES)-1 else ".",end='',sep='', file=t1)
+
+        print("\n\n  3.4. Nodes: ",end='',sep='')
+        print("\n\n  3.4. Nodes: ",end='',sep='', file=t1)
+
+        print("[X=",init_x,",Y=",init_y,"], ",end='',sep='')             #printing first node's coordinates
+        print("[X=",init_x,",Y=",init_y,"], ",end='',sep='', file=t1)
+
+        for i in range (0,len(XRULES)):     #print XRULES and YRULES reversed
+            print("[X=",XRULES[len(XRULES)-i-1],",Y=",YRULES[len(YRULES)-i-1],"]",", " if i<len(XRULES)-1 else ".", end='', sep='')
+            print("[X=",XRULES[len(XRULES)-i-1],",Y=",YRULES[len(YRULES)-i-1],"]",", " if i<len(XRULES)-1 else ".", end='', sep='', file=t1)
+
+    
+    else:           #if no result is found
+        print("Part 3. Results")
+        print("Part 3. Results", file=t1)
+
+        print("\n  3.1. Path not found.")
+        print("\n  3.1. Path not found.", file=t1)
+
+
+
+#beginning of main programme
+L=2         #starting counter
+RULES=[]    #keeps track of number of rules
+XRULES=[]   #keeps track of x coordinate of rules
+YRULES=[]   #keeps track of y coordinate of rules
+open_nodes = []     #keeps track of currently opened nodes
+closedcounter = 1   #keeps track of closed nodes
+newn = 2           #keeps truck of how many nodes have been opened
+move_x = [0, 1, 0, -1]      #move_x and move_y for rule
+move_y = [-1, 0, 1, 0]
+
+
+namelabread=input("Write name of the input file: ")
+namelabw= input("Write name of the output file: ")
+
+t1=open(namelabw,"w")
+fp = open(namelabread,"r")
+
+
+N=-1    #y dimension, starts from -1 to avoid counting last line; gives number of rows, first index, of maze
+for line in fp: #count how many lines, except last one, to determine how many rows there are 
+    N=N+1
+fp.close()
+
+fp = open(namelabread,"r")
+done=0
+
+M=-1    #x dimension, starts from -1 to avoid counting 1 of "y=1" of first line, gives number of columns, second index, of maze
+for x in fp:
+    if done==0:
+        for character in x:
+            if character=="0" or character=="1":    #count 0s and 1s to determine length of each row 
+                M=M+1
+        done=1
+
+maze=[[0 for i in range(M)] for j in range(N)]
+
+fp.close()
+fp=open(namelabread,"r")
+
+i=0
+for line in fp:
+    if i<N:
+        j=0
+        for k in line:
+            if j<M:
+                if k=="0" or k=="1":
+                    maze[N-i-1][j]=int(k)
+                    j=j+1
+        i=i+1
+
+
+solveMaze()

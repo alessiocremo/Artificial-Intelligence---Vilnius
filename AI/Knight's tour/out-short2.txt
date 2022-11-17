@@ -1,0 +1,18 @@
+PART 1. DATA 
+
+1) BOARD: 5x5.
+2) Initial Position: X=5, Y=5. L=1
+
+Part 3. Results
+	 1) Path is found. Trials=236.
+	 2) Path graphically: 
+ 
+
+Y, V ^
+   5 | 5    8   13   18    3   
+   4 |14   23    4    7   12   
+   3 | 9    6   19    2   17   
+   2 |22   15   24   11   20   
+   1 |25   10   21   16    1   
+     -------------------------> X, U
+       1    2    3    4    5  

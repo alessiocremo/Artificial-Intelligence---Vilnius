@@ -1,0 +1,7 @@
+PART 1. DATA 
+
+1) BOARD: 4x4.
+2) Initial Position: X=4, Y=1. L=1
+
+PART 3. Results
+Solution does not exist. Trials =17784
